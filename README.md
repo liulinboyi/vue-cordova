@@ -1,3 +1,6 @@
+# 非常感谢 x1y9 的开发模板
+[https://github.com/x1y9/vue-cordova]()
+
 ## 安卓版本
 
 安卓版本可以在Windows或OSx下构建：
