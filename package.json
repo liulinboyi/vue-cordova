@@ -1,6 +1,6 @@
 {
   "name": "myfirstapp",
-  "productName": "我的第一个app",
+  "productName": "要去做",
   "version": "0.0.1",
   "private": true,
   "description": "A cordova vue app",
@@ -17,11 +17,28 @@
     "version": "node build/script.version.js",
     "lint": "eslint --ext .js,.vue src"
   },
+  "transformModules": {
+    "cube-ui": {
+      "transform": "cube-ui/lib/${member}",
+      "kebabCase": true,
+      "style": {
+        "ignore": [
+          "create-api",
+          "better-scroll",
+          "locale"
+        ]
+      }
+    }
+  },
   "dependencies": {
     "animejs": "^2.2.0",
     "axios": "^0.18.0",
     "babel-runtime": "^6.25.0",
+    "cube-ui": "^1.12.30",
     "loadash": "^1.0.0",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^7.3.1",
+    "vconsole": "^3.3.4",
     "vue": "^2.5.0",
     "vue-i18n": "^7.6.0",
     "vue-router": "^3.0.1",
@@ -76,6 +93,7 @@
     "webpack": "^3.6.0",
     "webpack-dev-middleware": "^1.12.0",
     "webpack-hot-middleware": "^2.19.1",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "webpack-transform-modules-plugin": "^0.4.3"
   }
 }

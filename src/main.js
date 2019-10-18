@@ -2,6 +2,36 @@ import Vue from 'vue'
 
 import router from './router/router'
 import store from './store/store'
+// 引入VConsole
+import VConsole from 'vconsole'
+const vConsole = new VConsole()
+
+console.log(vConsole.version)
+// 引入cub-ui
+import {
+  /* eslint-disable no-unused-vars */
+  Style,
+  Button,
+  Dialog,
+  Input,
+  Swipe,
+  scroll,
+  ActionSheet,
+  TabBar,
+  TabPanels,
+  Upload
+} from 'cube-ui'
+
+Vue.use(Button)
+Vue.use(Style)
+Vue.use(Dialog)
+Vue.use(Input)
+Vue.use(Swipe)
+Vue.use(scroll)
+Vue.use(ActionSheet)
+Vue.use(TabBar)
+Vue.use(TabPanels)
+Vue.use(Upload)
 
 // import Axios from 'axios'
 // Vue.prototype.$http = Axios.create({

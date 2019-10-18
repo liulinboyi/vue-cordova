@@ -10,6 +10,7 @@ var
   useCssSourceMap =
     (env.dev && config.dev.cssSourceMap) ||
     (env.prod && config.build.productionSourceMap)
+var TransformModulesPlugin = require('webpack-transform-modules-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -100,7 +101,8 @@ module.exports = {
     }),
     new ProgressBarPlugin({
       format: config.progressFormat
-    })
+    }),
+    new TransformModulesPlugin()
   ],
   performance: {
     hints: false

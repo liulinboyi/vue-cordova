@@ -1,11 +1,11 @@
 {
 	"config_ios": {
-		"NSCameraUsageDescription": "我的第一个app",
-		"CFBundleDisplayName": "我的第一个app",
-		"CFBundleName": "我的第一个app"
+		"NSCameraUsageDescription": "要去做",
+		"CFBundleDisplayName": "要去做",
+		"CFBundleName": "要去做"
 	},
 	"config_android": {
-    "app_name": "我的第一个app",
+    "app_name": "要去做",
     "launcher_name": "@string/app_name",
     "activity_name": "@string/launcher_name"
 	}

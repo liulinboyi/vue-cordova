@@ -3,6 +3,6 @@ export default {
     app: 'myfirstapp'
   },
   zh: {
-    app: '我的第一个app'
+    app: '要去做'
   }
 }
