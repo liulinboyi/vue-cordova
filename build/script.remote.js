@@ -1,5 +1,6 @@
-process.env.CORDOVA_TARGET = process.argv[2] || (process.platform === 'win32' ? 'andorid' : 'ios')
+process.env.CORDOVA_TARGET = process.argv[2] || (process.platform === 'win32' ? 'android' : 'ios')
 process.env.THEME = process.argv[3] || ''
+console.log(process.env.CORDOVA_TARGET);
 
 var
   shell = require('shelljs'),
@@ -11,7 +12,9 @@ var
   et = require('elementtree'),
   spawn = require('./spawn'),
   hasPhone = false
+ console.log(path.resolve(__dirname, `../cordova/platforms/${process.env.CORDOVA_TARGET}`));
  
+ console.log(shell.test('-d', path.resolve(__dirname, `../cordova/platforms/${process.env.CORDOVA_TARGET}`)));
  
 if (shell.test('-d', path.resolve(__dirname, `../cordova/platforms/${process.env.CORDOVA_TARGET}`))) {
   let configFile = path.resolve(__dirname, '../cordova/config.xml')
@@ -22,7 +25,7 @@ if (shell.test('-d', path.resolve(__dirname, `../cordova/platforms/${process.env
   if (env.android) {
     var devices = spawn.getOutput('adb',['devices'])
     hasPhone = devices.stdout.match(/device$/)
-    spawn.sync('adb',['uninstall',packageId])
+    // spawn.sync('adb',['uninstall',packageId])
   }
   else {
     var devices = spawn.getOutput('ioreg',['-p', 'IOUSB'])
@@ -33,6 +36,8 @@ if (shell.test('-d', path.resolve(__dirname, `../cordova/platforms/${process.env
     let remoteServer = process.argv[4] || (ip.address() + ':8080')
     console.log("set cordova config file remote ip:" + remoteServer)
     fse.copySync(configFile, configFile + '.temp')
+    console.log(remoteServer);
+    
     doc.getroot().find('content').set('src', 'http://' + remoteServer + '?cordova')
     if (env.ios) {
       doc.getroot().remove(icon)

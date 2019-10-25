@@ -1,27 +1,74 @@
 <template>
-  <div>
-    <h3>个人中心</h3>
+  <div class="wrapper">
+    <div class="inner">
+      <div>个人中心</div>
+      <div class="nick_name">昵称：{{nick_name}}</div>
+      <div>id: {{id}}</div>
+    </div>
+
     <!-- <cube-upload
       action="//jsonplaceholder.typicode.com/photos/"
       :simultaneous-uploads="1"
       @files-added="filesAdded"
     /> -->
-    <cube-button @click="cameraTakePicture(0)">调用相册</cube-button>
+
+    <!-- <cube-button @click="cameraTakePicture(0)">调用相册</cube-button>
     <br>
-    <cube-button @click="createAndWriteFile(0)">创建文件</cube-button>
+    <cube-button @click="createAndWriteFile(0)">创建文件</cube-button> -->
+    <cube-button
+      class="btn"
+      :primary="true"
+      @click="out"
+    >退出</cube-button>
 
   </div>
 </template>
 <script>
 export default {
-  data () {
+  data() {
     return {
       Camera: {},
-      tasksStr: [1, 2, 3, 4, 5]
+      tasksStr: [1, 2, 3, 4, 5],
+      nick_name: '',
+      id: 0
+    }
+  },
+  async created() {
+    try {
+      const auth = localStorage.getItem('token')
+      // let res = await this.$axios.get('/todolist')
+      let res = await this.$axios({
+        method: "get",
+        url: "/",
+        // data:{"action":"refreshToken"},
+        headers: {
+          "Authorization": auth
+        }
+      })
+      // console.log(res, 'res', res.msg)
+      this.nick_name = res.data.nick_name
+      this.id = res.data.userId
+    } catch (error) {
+      console.log(error);
     }
   },
   methods: {
-    filesAdded (files) {
+    out() {
+      this.$createActionSheet({
+        title: '确认要退出吗',
+        active: 0,
+        data: [
+          { content: '退出' }
+        ],
+        onSelect: async () => {
+          localStorage.removeItem('token')
+          this.$router.push({ path: '/login' })
+          console.log(res, '退出');
+        }
+      }).show()
+
+    },
+    filesAdded(files) {
       let hasIgnore = false
       const maxSize = 1 * 1024 * 1024 // 1M
       for (let k in files) {
@@ -45,10 +92,10 @@ export default {
         sourceType: mySourceType
       })
     },
-    onSuccess (imageURL) {
+    onSuccess(imageURL) {
       console.log(imageURL)
     },
-    onFail (message) {
+    onFail(message) {
 
     },
 
@@ -58,19 +105,19 @@ export default {
  * IOS:cdvfile://localhost/persistent/xbrother/assets目录
  * 文件目录存在则打开,不存在则创建
  * */
-    createAndWriteFile () {
+    createAndWriteFile() {
       window.requestFileSystem(window.LocalFileSystem.PERSISTENT, 0, this.createsuccess, this.onErrorLoadFs)
     },
-    createsuccess (fs) {
+    createsuccess(fs) {
       console.log('打开的文件系统: ' + fs.name)
-      fs.root.getDirectory('xbrother', {create: true}, (dirEntry) => {
+      fs.root.getDirectory('xbrother', { create: true }, (dirEntry) => {
         console.log('dirEntry', dirEntry)
-        dirEntry.getDirectory('assets', {create: true}, (subDirEntry) => {
-          subDirEntry.getFile('task.json', {create: true, exclusive: false}, (fileEntry) => {
+        dirEntry.getDirectory('assets', { create: true }, (subDirEntry) => {
+          subDirEntry.getFile('task.json', { create: true, exclusive: false }, (fileEntry) => {
             fileEntry.name = 'task.json'
             fileEntry.fullPath = 'xbrother/assets/task.json'
             // 文件内容
-            var dataObj = new Blob(this.tasksStr, {type: 'text/plain'})
+            var dataObj = new Blob(this.tasksStr, { type: 'text/plain' })
             // 写入文件
             this.writeFile(fileEntry, dataObj)
           }, this.onErrorCreateFile)
@@ -79,8 +126,8 @@ export default {
     },
 
     // 将内容数据写入到文件中
-    writeFile (fileEntry, dataObj) {
-    // 创建一个写入对象
+    writeFile(fileEntry, dataObj) {
+      // 创建一个写入对象
       fileEntry.createWriter((fileWriter) => {
         // 文件写入成功
         fileWriter.onwriteend = () => {
@@ -97,19 +144,19 @@ export default {
       })
     },
     // FileSystem加载失败回调
-    onErrorLoadFs (err) {
+    onErrorLoadFs(err) {
       console.log(err)
     },
     // 文件夹创建失败回调
-    onErrorGetDir (err) {
+    onErrorGetDir(err) {
       console.log(err)
     },
     // 文件创建失败回调
-    onErrorCreateFile (err) {
+    onErrorCreateFile(err) {
       console.log(err)
     },
     // 读取文件失败响应
-    onErrorReadFile () {
+    onErrorReadFile() {
       console.log('文件读取失败!')
     }
     // ,
@@ -135,9 +182,9 @@ export default {
     //   ft.upload(imageURL, encodeURI(SERVER), this.success, this.fail, options)
     // }
   },
-  mounted () {
+  mounted() {
     document.addEventListener('deviceready', onDeviceReady, false)
-    function onDeviceReady () {
+    function onDeviceReady() {
       this.Camera = navigator.camera
       console.log(this.Camera)
       console.log('navigator.camera', navigator.camera)
@@ -148,5 +195,26 @@ export default {
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+.wrapper {
+  padding: 30px;
+  display: flex;
+  // justify-content: center;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  .inner {
+    text-align: center;
+  }
+}
+.nick_name {
+  margin: 20px 0;
+}
+.btn {
+  width: 80px;
+  display: inline-block;
+}
 </style>

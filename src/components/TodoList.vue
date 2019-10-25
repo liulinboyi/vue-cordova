@@ -2,15 +2,15 @@
   <div class="home-wrapper">
     <!-- <cube-button @click="alert">Button</cube-button> -->
     <div style="text-align: center;padding: 20px 0;font-size: 20px;font-weight: bold;">Todo-List</div>
-    <div class="wrapper">
+    <div class="wrapper-add">
       <cube-input
-        class="input"
+        class="input-add"
         v-model="value"
       ></cube-input>
       <cube-button
-        class="btn"
+        class="btn-add"
         :inline="true"
-        @click="addList"
+        v-tap="addList"
         @keyup.enter="addList"
       >添加</cube-button>
     </div>
@@ -30,7 +30,55 @@ export default {
   data () {
     return {
       value: '',
-      List: []
+      List: [],
+      initLength: 0,
+      realList: []
+    }
+  },
+  directives: {
+
+  },
+  async created () {
+    try {
+      const auth = localStorage.getItem('token')
+      // let res = await this.$axios.get('/todolist')
+      let res = await this.$axios({
+        method:"get",
+        url:"/todolist",
+        // data:{"action":"refreshToken"},
+        headers:{
+            "Authorization": auth
+        }
+      })
+      this.initLength = JSON.parse(JSON.stringify(res.data.rows.length))
+      this.realList = res.data.rows
+      res.data.rows = res.data.rows.filter(item => {
+        return item.del === false
+      })
+      // console.log(res, 'res', res.data.rows)
+      res.data.rows.forEach(element => {
+        let temp = {
+          item: {
+            text: element.content,
+            value: element.index
+          },
+          btns: [
+            {
+              action: 'delete',
+              text: '删除',
+              color: '#ff3a32'
+            }
+          ]
+      }
+        this.List.push(temp)
+      });
+      
+    }
+    catch (error) {
+      console.log(error, error.response.status, error.message, [error])
+      if (error.response.status === 401) {
+        this.$router.push({ path: '/login' })
+      }
     }
   },
   methods: {
@@ -43,7 +91,7 @@ export default {
         icon: 'cubeic-alert'
       }).show()
     },
-    addList () {
+    async addList () {
       if (this.value === '') {
         this.$createDialog({
           type: 'alert',
@@ -53,10 +101,23 @@ export default {
         }).show()
         return
       }
-      let cur = localStorage.getItem('List')
-      if (cur !== null) {
-        cur = JSON.parse(cur)
-        let temp = {
+      const auth = localStorage.getItem('token')
+      let res = await this.$axios({
+        method: 'post',
+        url: 'add-todo',
+        data: {
+          "content": this.value,
+          "value": this.realList.length + 1
+        },
+        headers:{
+            "Authorization": auth
+        }
+      })
+      console.log(res,'增加');
+      
+
+      let cur = this.List
+      let temp = {
           item: {
             text: this.value,
             value: cur.length
@@ -69,44 +130,63 @@ export default {
             }
           ]
         }
-        cur.push(temp)
-        this.List = cur
-        localStorage.setItem('List', JSON.stringify(cur))
-        this.value = ''
-      }
-      else {
-        // let temp = {
-        //   index: 0,
-        //   value: this.value
-        // }
-        let temp = [{
-          item: {
-            text: this.value,
-            value: 0
-          },
-          btns: [
-          // {
-          //   action: 'clear',
-          //   text: '不再关注',
-          //   color: '#c8c7cd'
-          // },
-            {
-              action: 'delete',
-              text: '删除',
-              color: '#ff3a32'
-            }
-          ]
-        }]
-        this.List = temp
-        localStorage.setItem('List', JSON.stringify(temp))
-        this.value = ''
-      }
+      this.realList.push(temp)
+      cur.push(temp)
+      this.value = ''
+      // let cur = localStorage.getItem('List')
+      // if (cur !== null) {
+      //   cur = JSON.parse(cur)
+      //   let temp = {
+      //     item: {
+      //       text: this.value,
+      //       value: cur.length
+      //     },
+      //     btns: [
+      //       {
+      //         action: 'delete',
+      //         text: '删除',
+      //         color: '#ff3a32'
+      //       }
+      //     ]
+      //   }
+      //   cur.push(temp)
+      //   this.List = cur
+      //   localStorage.setItem('List', JSON.stringify(cur))
+      //   this.value = ''
+      // }
+      // else {
+      //   // let temp = {
+      //   //   index: 0,
+      //   //   value: this.value
+      //   // }
+      //   let temp = [{
+      //     item: {
+      //       text: this.value,
+      //       value: 0
+      //     },
+      //     btns: [
+      //     // {
+      //     //   action: 'clear',
+      //     //   text: '不再关注',
+      //     //   color: '#c8c7cd'
+      //     // },
+      //       {
+      //         action: 'delete',
+      //         text: '删除',
+      //         color: '#ff3a32'
+      //       }
+      //     ]
+      //   }]
+      //   this.List = temp
+      //   localStorage.setItem('List', JSON.stringify(temp))
+      //   this.value = ''
+      // }
     },
     onItemClick (item) {
       console.log('click item:', item)
     },
-    onBtnClick (btn, index) {
-      console.log(index)
+    onBtnClick (btn, index,e) {
+      console.log(index,btn,e)
       if (btn.action === 'delete') {
         this.$createActionSheet({
           title: '确认要删除吗',
@@ -114,9 +194,19 @@ export default {
           data: [
             {content: '删除'}
           ],
-          onSelect: () => {
+          onSelect: async () => {
             this.List.splice(index, 1)
-            localStorage.setItem('List', JSON.stringify(this.List))
+            const auth = localStorage.getItem('token')
+            let res = await this.$axios({
+              method: 'delete',
+              url: `/dellist/${e.item.value}`,
+              headers:{
+                  "Authorization": auth
+              }
+            })
+            console.log(res, '删除');
+            
+            // localStorage.setItem('List', JSON.stringify(this.List))
           }
         }).show()
       }
@@ -124,26 +214,26 @@ export default {
 
   },
   mounted () {
-    if (localStorage.getItem('List') !== null) {
-      this.List = JSON.parse(localStorage.getItem('List'))
-    }
-    else {
-      this.List = []
-    }
+    // if (localStorage.getItem('List') !== null) {
+    //   this.List = JSON.parse(localStorage.getItem('List'))
+    // }
+    // else {
+    //   this.List = []
+    // }
   }
 }
 </script>
-<style lang="scss">
-.wrapper {
+<style lang="scss" scoped>
+.wrapper-add {
   display: flex;
   padding: 0 10px;
 }
-.input {
+.input-add {
   // width: 80%;
   display: inline-block;
   flex: 1;
 }
-.btn {
+.btn-add {
   width: 80px;
   display: inline-block;
 }

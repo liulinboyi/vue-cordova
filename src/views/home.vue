@@ -1,28 +1,14 @@
 <template>
   <div>
-
-    <!-- <cube-tab-bar
-    v-model="selectedLabelDefault"
-    :data="tabs"
-    @click="clickHandler"
-    @change="changeHandler">
-  </cube-tab-bar> -->
     <cube-tab-panels v-model="selectedLabel">
       <cube-tab-panel
         v-for="(item, index) in tabs"
         :label="item.label"
         :key="item.label"
       >
-        <ul>
+        <ul class="ul">
           <TodoList v-if="item.component === 'TodoList'"></TodoList>
           <Center v-if="item.component === 'Center'"></Center>
-          <!-- <li
-            class="tab-panel-li"
-            v-for="(hero, index) in item.heroes"
-            :key="hero"
-          >
-            {{hero}}
-          </li> -->
         </ul>
       </cube-tab-panel>
     </cube-tab-panels>
@@ -91,7 +77,11 @@ export default {
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+.ul {
+  height: 100%;
+  width: 100%;
+}
 </style>
 
 

@@ -1,7 +1,20 @@
+/* eslint-disable no-new */
 import Vue from 'vue'
 
 import router from './router/router'
 import store from './store/store'
+import axios from 'axios'
+
+axios.defaults.baseURL = 'https://api.yuanfanglai.top'
+const auth = localStorage.getItem('token')
+if (auth) {
+  axios.defaults.headers.common['Authorization'] = auth
+}
+else {
+  axios.defaults.headers.common['Authorization'] = null
+}
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+Vue.prototype.$axios = axios
 // 引入VConsole
 import VConsole from 'vconsole'
 const vConsole = new VConsole()
@@ -60,6 +73,44 @@ Vue.directive('anime', {
   }
 })
 Vue.prototype.$anime = animejs
+
+// 指令
+import {VueTouch} from './utils/tap'
+Vue.directive('tap', {
+  bind: function (el, binding) {
+    new VueTouch(el, binding, 'tap')
+  }
+})
+Vue.directive('swipe', {
+  bind: function (el, binding) {
+    new VueTouch(el, binding, 'swipe')
+  }
+})
+Vue.directive('swipeleft', {
+  bind: function (el, binding) {
+    new VueTouch(el, binding, 'swipeleft')
+  }
+})
+Vue.directive('swiperight', {
+  bind: function (el, binding) {
+    new VueTouch(el, binding, 'swiperight')
+  }
+})
+Vue.directive('swipedown', {
+  bind: function (el, binding) {
+    new VueTouch(el, binding, 'swipedown')
+  }
+})
+Vue.directive('swipeup', {
+  bind: function (el, binding) {
+    new VueTouch(el, binding, 'swipeup')
+  }
+})
+Vue.directive('longtap', {
+  bind: function (el, binding) {
+    new VueTouch(el, binding, 'longtap')
+  }
+})
 
 import App from './App'
 import { i18n } from './components/locale'
