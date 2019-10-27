@@ -39,3 +39,10 @@ build build
 
 * 图标文件在src/assets/icon.png
 
+## 修改安卓启动画面
+https://www.yuque.com/docs/share/19196727-80ae-4d9e-930a-f1f8ab162bd0#
+### 修改AndroidManifest.xml文件
+```xml
+<activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:label="@string/activity_name" android:launchMode="singleTop" android:name="MainActivity" android:theme="@android:style/Theme.Wallpaper.NoTitleBar" android:windowSoftInputMode="adjustResize">
+```
+

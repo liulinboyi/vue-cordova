@@ -16,10 +16,10 @@ else {
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 Vue.prototype.$axios = axios
 // 引入VConsole
-import VConsole from 'vconsole'
-const vConsole = new VConsole()
+// import VConsole from 'vconsole'
+// const vConsole = new VConsole()
 
-console.log(vConsole.version)
+// console.log(vConsole.version)
 // 引入cub-ui
 import {
   /* eslint-disable no-unused-vars */

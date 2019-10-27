@@ -4,6 +4,20 @@
       <div>个人中心</div>
       <div class="nick_name">昵称：{{nick_name}}</div>
       <div>id: {{id}}</div>
+
+      <div class="user"><img src="http://img1.vued.vanthink.cn/vued7553a09a5d5209ebd00a48264394b7f3.png" class="avatar"></div>
+      <vue-core-image-upload
+      :class="['btn_upload', 'btn-primary']"
+      :crop="'local'"
+      :headers="headers"
+      @imageuploaded="imageuploaded"
+      :max-file-size="5242880"
+      :text="'上传头像'"
+      :inputOfFile="'file'"
+      :credentials="true"
+      :compress="50"
+      url="https://127.0.0.1/upload" >
+    </vue-core-image-upload>
     </div>
 
     <!-- <cube-upload
@@ -24,18 +38,25 @@
   </div>
 </template>
 <script>
+import VueCoreImageUpload  from 'vue-core-image-upload';
 export default {
   data() {
     return {
       Camera: {},
       tasksStr: [1, 2, 3, 4, 5],
       nick_name: '',
-      id: 0
+      id: 0,
+      src: 'http://img1.vued.vanthink.cn/vued0a233185b6027244f9d43e653227439a.png',
+      headers: ''
     }
+  },
+  components: {
+    'vue-core-image-upload': VueCoreImageUpload
   },
   async created() {
     try {
       const auth = localStorage.getItem('token')
+      this.headers = {Authorization: auth}
       // let res = await this.$axios.get('/todolist')
       let res = await this.$axios({
         method: "get",
@@ -53,6 +74,13 @@ export default {
     }
   },
   methods: {
+    imageuploaded(res) {
+      console.log(res);
+      
+      if (res.errcode == 0) {
+        this.src = 'http://img1.vued.vanthink.cn/vued751d13a9cb5376b89cb6719e86f591f3.png';
+      }
+    },
     out() {
       this.$createActionSheet({
         title: '确认要退出吗',
@@ -216,5 +244,45 @@ export default {
 .btn {
   width: 80px;
   display: inline-block;
+}
+
+</style>
+<style lang="scss">
+.g-core-image-corp-container{
+  transform: translateX(100vw);
+}
+
+.btn_upload {
+    display: inline-block;
+    line-height: 30px;
+    padding: 0 15px;
+    border-radius: 2px;
+    background: #fff;
+    border: 1px solid #e7eaec;
+    min-width: 46px;
+    color: #323c48;
+    text-align: center;
+    transition: all .15s ease;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none!important;
+    box-shadow: 0 1px 2px -1px hsla(0,0%,100%,.1);
+    transition: all .25s ease;
+}
+.btn-primary,.btn.active,.submit-btn {
+    color: #fff;
+    background: #2ecc71;
+    border-color: #2ecc71
+}
+.center {
+    text-align: center;
+    padding-bottom: 20px;
+}
+.avatar {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,.05)
 }
 </style>
